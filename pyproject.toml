@@ -1,0 +1,30 @@
+[project]
+name = "primitive-db"
+version = "0.1.0"
+description = "Примитивная база данных с консольным интерфейсом"
+readme = "README.md"
+authors = [
+    { name = "kiopio98", email = "nikanorovnikita7@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = ["prompt>=0.4.1", "prettytable>=3.12"]
+
+[dependency-groups]
+dev = ["ruff>=0.17"]
+
+[project.scripts]
+project = "primitive_db.main:main"
+database = "primitive_db.main:main"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = ["venv", ".venv", "dist", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = []
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14.0"]
+build-backend = "uv_build"
