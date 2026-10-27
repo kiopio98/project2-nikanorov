@@ -5,6 +5,7 @@ from prettytable import PrettyTable
 
 from primitive_db import core
 from primitive_db.constants import HELP_TEXT, ID_COLUMN, META_FILE
+from primitive_db.decorators import handle_db_errors
 from primitive_db.parser import parse_command
 from primitive_db.utils import (
     load_metadata,
@@ -34,6 +35,7 @@ def print_rows(schema, rows):
     print(table)
 
 
+@handle_db_errors
 def execute_command(text):
     """Выполнить команду; False означает завершение сеанса."""
     query = parse_command(text)
@@ -64,6 +66,7 @@ def execute_command(text):
             )
         return True
     if command == "drop_table":
+        core.get_schema(metadata, table_name)
         result = core.drop_table(metadata, table_name)
         if result is not None:
             save_metadata(META_FILE, result)
@@ -81,7 +84,7 @@ def execute_command(text):
         if result is not None:
             save_table_data(table_name, result)
             print(
-                f'Запись с ID={result[-1][ID_COLUMN]} успешно добавлена '
+                f"Запись с ID={result[-1][ID_COLUMN]} успешно добавлена "
                 f'в таблицу "{table_name}".'
             )
         return True
@@ -103,7 +106,10 @@ def execute_command(text):
         result = core.delete(rows, query["where"])
         if result is not None:
             save_table_data(table_name, result)
-            print(f'Из таблицы "{table_name}" успешно удалено записей: {len(rows) - len(result)}.')
+            print(
+                f'Из таблицы "{table_name}" успешно удалено записей: '
+                f"{len(rows) - len(result)}."
+            )
     return True
 
 
@@ -118,5 +124,3 @@ def run():
         except (EOFError, KeyboardInterrupt):
             print("\nДо свидания!")
             break
-        except (KeyError, ValueError, OSError) as error:
-            print(f"Ошибка: {error}")

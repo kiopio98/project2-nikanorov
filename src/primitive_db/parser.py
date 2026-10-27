@@ -123,9 +123,17 @@ def parse_command(text):
             raise ValueError(f"Формат: {command} имя_таблицы")
         return {"command": command, "table": tokens[1]}
     if command == "insert":
-        if len(tokens) < 6 or tokens[1].lower() != "into" or tokens[3].lower() != "values":
+        if (
+            len(tokens) < 6
+            or tokens[1].lower() != "into"
+            or tokens[3].lower() != "values"
+        ):
             raise ValueError("Формат: insert into имя values (...)")
-        return {"command": command, "table": tokens[2], "values": parse_values(tokens[4:])}
+        return {
+            "command": command,
+            "table": tokens[2],
+            "values": parse_values(tokens[4:]),
+        }
     if command in ("select", "delete"):
         if len(tokens) < 3 or tokens[1].lower() != "from":
             raise ValueError(f"Формат: {command} from имя [where столбец = значение]")
@@ -149,6 +157,6 @@ def parse_command(text):
             "command": command,
             "table": tokens[1],
             "set": parse_clause(tokens[3:where_index]),
-            "where": parse_clause(tokens[where_index + 1:]),
+            "where": parse_clause(tokens[where_index + 1 :]),
         }
     raise ValueError(f"Функции {tokens[0]} нет. Попробуйте снова.")
